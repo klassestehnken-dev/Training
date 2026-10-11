@@ -1,5 +1,5 @@
 // Offline-Speicher für die App-Dateien. Bei einer neuen App-Version die Nummer erhöhen.
-const CACHE = "training-v1";
+const CACHE = "training-v2";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
