@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+input,select,button,textarea{font-family:inherit}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid #2541D8;outline-offset:2px}
+body{background:#E6E9ED;-webkit-tap-highlight-color:transparent}
+
+input,textarea,select{color:inherit}
