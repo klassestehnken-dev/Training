@@ -20,7 +20,8 @@ src/index.template.html   HTML-Vorlage mit Platzhaltern /*__CSS__*/ und /*__JS__
 build.mjs                 baut index.html + erneuert die Cache-Version in sw.js
 index.html, sw.js         gebaute, ausgelieferte Dateien (werden committet!)
 manifest.webmanifest, icon-*.png, apple-touch-icon.png
-apps-script/Code.gs       Google-Apps-Script fürs Sheet (Code-Zeile 7 ist ein Platzhalter)
+apps-script/Code.gs       Google-Apps-Script fürs Sheet (liest den Code aus der Skripteigenschaft CODE)
+apps-script/appsscript.json  Manifest des Apps-Script-Projekts (für clasp)
 extras/uebungs-figuren.jsx  animierte Übungs-Strichfiguren (bewusst NICHT in der App, nur für Vorschaubilder)
 tests/gas-mock.cjs         Nachbau von Apps Script/Sheet für lokale Tests
 ```
@@ -38,7 +39,12 @@ Auf dem iPhone die App einmal ganz schließen und neu öffnen.
 
 **Immer nach Änderungen an src/ bauen und die gebauten Dateien mitcommitten**, sonst ändert sich online nichts.
 
-Änderungen an `apps-script/Code.gs` müssen von Joshua selbst übernommen werden: Code im Apps-Script-Editor ersetzen, **eigenen Code in Zeile 7 wieder eintragen**, dann *Bereitstellen → Bereitstellungen verwalten → Stift → Version: Neue Version*. Die URL bleibt gleich. Den echten Code nie ins Repo schreiben (Repo ist öffentlich).
+Änderungen an `apps-script/Code.gs` gehen per **clasp** direkt ins Google-Projekt:
+`npm run gas:deploy` lädt `apps-script/` hoch und erneuert die bestehende Web-App-Bereitstellung (URL bleibt gleich).
+`.clasp.json` (scriptId, rootDir, deploymentId) ist absichtlich nicht im Repo. Der geheime Code steht als
+**Skripteigenschaft `CODE`** im Apps-Script-Projekt, nie im Quelltext (Repo ist öffentlich). Fehlt sie, antwortet das
+Skript „Im Skript fehlt die Skripteigenschaft CODE.“. Live-Bereitstellungen startet Joshua selbst bzw. bestätigt sie.
+Ohne clasp: Code im Apps-Script-Editor ersetzen, dann *Bereitstellen → Bereitstellungen verwalten → Stift → Version: Neue Version*.
 
 ## Datenmodell (localStorage `trn-data`)
 
@@ -106,7 +112,7 @@ Weitere Schlüssel: `trn-queue` (noch nicht gesendete Änderungen), `trn-setting
 ## Testen
 
 - Bisher mit Playwright (Chromium, Handygröße 390×844) getestet. Google-Aufrufe per `page.route("https://script.google.com/**")` auf `tests/gas-mock.cjs` umleiten:
-  `node tests/gas-mock.cjs apps-script/Code.gs` (Port 8788, Code im Mock: `geheim42`, Sheet-Inhalt unter `/__sheets`).
+  `node tests/gas-mock.cjs apps-script/Code.gs` (Port 8788, Code im Mock: `geheim42`, änderbar mit `GAS_CODE=…`, Sheet-Inhalt unter `/__sheets`).
 - Open Food Facts im Test per `page.route` mit Beispiel-JSON beantworten.
 - Scanner testen: Chromium mit `--use-fake-device-for-media-stream --use-file-for-fake-video-capture=<strichcode>.y4m`
   (Strichcode-PNG mit ffmpeg zu y4m umwandeln). Funktioniert zuverlässig.

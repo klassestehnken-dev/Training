@@ -1,10 +1,18 @@
 /**
  * Trainings-App: Speicher im Google Sheet
- * 1. Unten bei CODE einen eigenen Code eintragen (den gibst du später auch in der App ein).
- * 2. Speichern, dann „Bereitstellen“ > „Neue Bereitstellung“ > Typ „Web-App“
+ * 1. Projekteinstellungen > Skripteigenschaften: Eigenschaft CODE mit eigenem Code anlegen
+ *    (den gibst du auch in der App ein). Der Code steht so nie im Quelltext.
+ * 2. „Bereitstellen“ > „Neue Bereitstellung“ > Typ „Web-App“
  *    Ausführen als: Ich   |   Zugriff: Jeder
+ * Hochladen und Bereitstellung erneuern geht von der App-Seite aus mit: npm run gas:deploy
  */
-const CODE = 'HIER-DEINEN-CODE-EINTRAGEN';
+const CODE = PropertiesService.getScriptProperties().getProperty('CODE') || '';
+
+function checkCode_(c) {
+  if (!CODE) return 'Im Skript fehlt die Skripteigenschaft CODE.';
+  if (String(c || '') !== CODE) return 'Falscher Code.';
+  return '';
+}
 
 const SHEET_ENTRIES = 'Einträge';
 const SHEET_EX = 'Übungen';
@@ -18,7 +26,8 @@ const TYPE_LABEL = { kraft: 'Gewichte', eigen: 'Eigengewicht', cardio: 'Cardio' 
 const TYPE_ID = { Gewichte: 'kraft', Eigengewicht: 'eigen', Cardio: 'cardio' };
 
 function doGet(e) {
-  if (String(e.parameter.code || '') !== CODE) return json_({ ok: false, error: 'Falscher Code.' });
+  const err = checkCode_(e.parameter.code);
+  if (err) return json_({ ok: false, error: err });
   return json_(Object.assign({ ok: true }, load_()));
 }
 
@@ -29,7 +38,8 @@ function doPost(e) {
   } catch (err) {
     return json_({ ok: false, error: 'Ungültige Anfrage.' });
   }
-  if (String(body.code || '') !== CODE) return json_({ ok: false, error: 'Falscher Code.' });
+  const bad = checkCode_(body.code);
+  if (bad) return json_({ ok: false, error: bad });
 
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);

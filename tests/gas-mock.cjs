@@ -18,13 +18,14 @@ function mkSheet(name){ const rows=[]; return {
 };}
 const ctx = {
   SpreadsheetApp:{ getActive:()=>({ getSheetByName:n=>sheets[n]||null, insertSheet:n=>(sheets[n]=mkSheet(n)), getSpreadsheetTimeZone:()=>"Europe/Berlin"}), flush(){} },
+  PropertiesService:{ getScriptProperties:()=>({ getProperty:k=>(k==="CODE"?process.env.GAS_CODE??"geheim42":null) }) },
   LockService:{ getScriptLock:()=>({waitLock(){},releaseLock(){}}) },
   ContentService:{ MimeType:{JSON:"json"}, createTextOutput:t=>({t,setMimeType(){return this}}) },
   Utilities:{ formatDate:(d)=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}` },
   Set, Date, JSON, String, Number, Object,
 };
 vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(process.argv[2],"utf8").replace("HIER-DEINEN-CODE-EINTRAGEN","geheim42"), ctx);
+vm.runInContext(fs.readFileSync(process.argv[2],"utf8"), ctx);
 http.createServer((req,res)=>{
   let b=""; req.on("data",d=>b+=d); req.on("end",()=>{
     const u=new URL(req.url,"http://x");
