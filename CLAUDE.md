@@ -43,7 +43,8 @@ Auf dem iPhone die App einmal ganz schließen und neu öffnen.
 `npm run gas:deploy` lädt `apps-script/` hoch und erneuert die bestehende Web-App-Bereitstellung (URL bleibt gleich).
 `.clasp.json` (scriptId, rootDir, deploymentId) ist absichtlich nicht im Repo. Der geheime Code steht als
 **Skripteigenschaft `CODE`** im Apps-Script-Projekt, nie im Quelltext (Repo ist öffentlich). Fehlt sie, antwortet das
-Skript „Im Skript fehlt die Skripteigenschaft CODE.“. Live-Bereitstellungen startet Joshua selbst bzw. bestätigt sie.
+Skript „Im Skript fehlt die Skripteigenschaft CODE.“. Claude darf `npm run gas:deploy` selbst ausführen
+(erlaubt in `.claude/settings.local.json`): vorher mit dem Mock testen, danach per GET mit falschem Code prüfen.
 Ohne clasp: Code im Apps-Script-Editor ersetzen, dann *Bereitstellen → Bereitstellungen verwalten → Stift → Version: Neue Version*.
 
 ## Datenmodell (localStorage `trn-data`)
